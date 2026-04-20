@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NullShield — Zero Tolerance. Zero Breach.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --acid: #b8ff47;
+    --acid-dim: #7ab82e;
+    --bg: #07090a;
+    --bg2: #0d1210;
+    --bg3: #111b17;
+    --border: rgba(184,255,71,0.15);
+    --text: #e8f0ea;
+    --muted: #8a9e8d;
+    --mono: 'Space Mono', monospace;
+    --sans: 'Syne', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    overflow-x: hidden;
+    cursor: crosshair;
+  }
+
+  /* Grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(184,255,71,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(184,255,71,0.03) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.2rem 3rem;
+    background: rgba(7,9,10,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo {
+    font-family: var(--sans);
+    font-weight: 800;
+    font-size: 1.25rem;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .logo span { color: var(--acid); }
+
+  nav ul {
+    list-style: none;
+    display: flex;
+    gap: 2rem;
+  }
+
+  nav ul a {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  nav ul a:hover { color: var(--acid); }
+
+  .nav-cta {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: var(--acid);
+    color: #07090a;
+    padding: 0.55rem 1.2rem;
+    border: none;
+    cursor: pointer;
+    font-weight: 700;
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+
+  .nav-cta:hover { opacity: 0.85; }
+
+  /* HERO */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 8rem 3rem 4rem;
+    z-index: 1;
+    overflow: hidden;
+  }
+
+  .hero-badge {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--acid);
+    border: 1px solid var(--border);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.9rem;
+    margin-bottom: 2rem;
+    width: fit-content;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .hero-badge::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--acid);
+    border-radius: 50%;
+    animation: pulse 1.8s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.7); }
+  }
+
+  h1 {
+    font-size: clamp(3rem, 7vw, 6.5rem);
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.6s 0.1s ease both;
+    max-width: 900px;
+  }
+
+  h1 em {
+    font-style: normal;
+    color: var(--acid);
+    position: relative;
+  }
+
+  .hero-sub {
+    font-family: var(--mono);
+    font-size: 0.95rem;
+    line-height: 1.8;
+    color: var(--muted);
+    max-width: 520px;
+    margin-bottom: 3rem;
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    animation: fadeUp 0.6s 0.3s ease both;
+  }
+
+  .btn-primary {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: var(--acid);
+    color: #07090a;
+    padding: 0.9rem 2rem;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+    display: inline-block;
+  }
+
+  .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+
+  .btn-ghost {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: transparent;
+    color: var(--text);
+    padding: 0.9rem 2rem;
+    border: 1px solid rgba(232,240,234,0.2);
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+    display: inline-block;
+  }
+
+  .btn-ghost:hover { border-color: var(--acid); color: var(--acid); }
+
+  /* Floating shield graphic */
+  .shield-art {
+    position: absolute;
+    right: -80px; top: 50%;
+    transform: translateY(-50%);
+    width: 600px;
+    height: 600px;
+    opacity: 0.08;
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(-50%) rotate(0deg); }
+    50% { transform: translateY(-52%) rotate(2deg); }
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 3rem;
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+    animation: fadeUp 0.6s 0.4s ease both;
+    flex-wrap: wrap;
+  }
+
+  .stat-item {}
+  .stat-num {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--acid);
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+  .stat-label {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 0.3rem;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* SECTION SHARED */
+  section { position: relative; z-index: 1; }
+
+  .section-tag {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--acid);
+    margin-bottom: 1rem;
+  }
+
+  .section-title {
+    font-size: clamp(1.8rem, 3vw, 2.8rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+  }
+
+  .section-body {
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    line-height: 1.9;
+    color: var(--muted);
+    max-width: 540px;
+  }
+
+  /* SERVICES */
+  .services {
+    padding: 7rem 3rem;
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .services-header {
+    margin-bottom: 4rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    align-items: end;
+  }
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+  }
+
+  .service-card {
+    background: var(--bg2);
+    padding: 2.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s;
+  }
+
+  .service-card:hover { background: var(--bg3); }
+
+  .service-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 0;
+    background: var(--acid);
+    transition: height 0.3s ease;
+  }
+
+  .service-card:hover::before { height: 100%; }
+
+  .service-icon {
+    width: 44px; height: 44px;
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 1.5rem;
+    color: var(--acid);
+    font-size: 1.2rem;
+  }
+
+  .service-num {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    color: var(--acid);
+    margin-bottom: 0.8rem;
+    opacity: 0.6;
+  }
+
+  .service-card h3 {
+    font-size: 1.15rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.8rem;
+  }
+
+  .service-card p {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    line-height: 1.8;
+    color: var(--muted);
+  }
+
+  /* HOW IT WORKS */
+  .how {
+    padding: 7rem 3rem;
+  }
+
+  .how-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6rem;
+    align-items: center;
+  }
+
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-top: 3rem;
+  }
+
+  .step {
+    display: flex;
+    gap: 1.5rem;
+    padding: 1.5rem 0;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+
+  .step-num {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    color: var(--acid);
+    width: 28px;
+    flex-shrink: 0;
+    padding-top: 2px;
+  }
+
+  .step h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+    letter-spacing: -0.01em;
+  }
+
+  .step p {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  /* Terminal art */
+  .terminal {
+    background: #050807;
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    line-height: 2;
+  }
+
+  .terminal-bar {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-r { background: #ff5f57; }
+  .dot-y { background: #febc2e; }
+  .dot-g { background: #28c840; }
+
+  .t-cmd { color: var(--acid); }
+  .t-out { color: var(--muted); }
+  .t-ok  { color: #28c840; }
+  .t-warn { color: #febc2e; }
+  .t-err  { color: #ff5f57; }
+  .t-blink { display: inline-block; animation: blink 1s step-end infinite; }
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+  /* WAITLIST */
+  .waitlist {
+    padding: 7rem 3rem;
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+  }
+
+  .waitlist-inner {
+    max-width: 700px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .waitlist-inner .section-body {
+    margin: 1rem auto 3rem;
+    text-align: left;
+    max-width: 100%;
+  }
+
+  .waitlist-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    text-align: left;
+  }
+
+  .form-field label {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .form-field input, .form-field select {
+    background: var(--bg);
+    border: 1px solid rgba(184,255,71,0.2);
+    color: var(--text);
+    padding: 0.85rem 1rem;
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    outline: none;
+    transition: border-color 0.2s;
+    appearance: none;
+    width: 100%;
+  }
+
+  .form-field input:focus, .form-field select:focus {
+    border-color: var(--acid);
+  }
+
+  .form-field input::placeholder { color: var(--muted); }
+
+  .form-field select option { background: #0d1210; }
+
+  .submit-btn {
+    width: 100%;
+    padding: 1.1rem;
+    background: var(--acid);
+    color: #07090a;
+    border: none;
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.15s;
+    margin-top: 0.5rem;
+  }
+
+  .submit-btn:hover { opacity: 0.88; }
+  .submit-btn:active { transform: scale(0.99); }
+
+  .form-note {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--muted);
+    text-align: center;
+    margin-top: 0.5rem;
+  }
+
+  .success-box {
+    display: none;
+    background: rgba(184,255,71,0.05);
+    border: 1px solid var(--border);
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .success-box.show { display: block; }
+
+  .success-box h3 {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--acid);
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+  }
+
+  .success-box p {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  /* WAITLIST COUNT */
+  .wl-count-bar {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+  }
+
+  .wl-count-bar .count {
+    color: var(--acid);
+    font-weight: 700;
+    font-size: 1rem;
+  }
+
+  /* FOOTER */
+  footer {
+    padding: 3rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    z-index: 1;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  footer .logo { font-size: 1.1rem; }
+
+  .footer-links {
+    display: flex;
+    gap: 2rem;
+  }
+
+  .footer-links a {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .footer-links a:hover { color: var(--acid); }
+
+  .footer-copy {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--muted);
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 2rem; right: 2rem;
+    background: var(--acid);
+    color: #07090a;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.8rem 1.5rem;
+    z-index: 999;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: all 0.3s;
+    pointer-events: none;
+  }
+
+  .toast.show { opacity: 1; transform: translateY(0); }
+
+  /* Scroll reveal */
+  .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 900px) {
+    nav { padding: 1rem 1.5rem; }
+    nav ul { display: none; }
+    .hero { padding: 7rem 1.5rem 3rem; }
+    .shield-art { display: none; }
+    .services { padding: 5rem 1.5rem; }
+    .services-header { grid-template-columns: 1fr; }
+    .services-grid { grid-template-columns: 1fr; }
+    .how { padding: 5rem 1.5rem; }
+    .how-inner { grid-template-columns: 1fr; gap: 3rem; }
+    .waitlist { padding: 5rem 1.5rem; }
+    .form-row { grid-template-columns: 1fr; }
+    footer { padding: 2rem 1.5rem; flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="logo">Null<span>Shield</span></a>
+  <ul>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="#waitlist">Early Access</a></li>
+  </ul>
+  <a href="#waitlist" class="nav-cta">Join Waitlist</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <!-- shield SVG -->
+  <svg class="shield-art" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M200 20 L360 80 L360 200 C360 300 280 360 200 390 C120 360 40 300 40 200 L40 80 Z" fill="none" stroke="#b8ff47" stroke-width="2"/>
+    <path d="M200 50 L330 100 L330 200 C330 285 263 338 200 362 C137 338 70 285 70 200 L70 100 Z" fill="none" stroke="#b8ff47" stroke-width="1" opacity="0.4"/>
+    <path d="M200 80 L300 120 L300 200 C300 270 247 316 200 334 C153 316 100 270 100 200 L100 120 Z" fill="none" stroke="#b8ff47" stroke-width="1" opacity="0.2"/>
+    <circle cx="200" cy="195" r="30" stroke="#b8ff47" stroke-width="1.5" opacity="0.6"/>
+    <path d="M185 195 L198 210 L220 180" stroke="#b8ff47" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="200" y1="50" x2="200" y2="130" stroke="#b8ff47" stroke-width="0.5" opacity="0.3" stroke-dasharray="4 4"/>
+    <line x1="200" y1="260" x2="200" y2="340" stroke="#b8ff47" stroke-width="0.5" opacity="0.3" stroke-dasharray="4 4"/>
+  </svg>
+
+  <div class="hero-badge">Early Access Open — Limited Spots</div>
+
+  <h1>Cyber threats<br>meet their <em>null</em><br>pointer.</h1>
+
+  <p class="hero-sub">
+    NullShield delivers enterprise-grade threat detection, zero-trust architecture, and 24/7 incident response — engineered for the next generation of adversaries.
+  </p>
+
+  <div class="hero-actions">
+    <a href="#waitlist" class="btn-primary">Request Early Access</a>
+    <a href="#services" class="btn-ghost">Explore Services</a>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat-item">
+      <div class="stat-num">&lt;2ms</div>
+      <div class="stat-label">Threat Detection</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">99.97%</div>
+      <div class="stat-label">Uptime SLA</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">0-day</div>
+      <div class="stat-label">Exploit Coverage</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">24/7</div>
+      <div class="stat-label">SOC Response</div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="services" id="services">
+  <div class="services-header reveal">
+    <div>
+      <div class="section-tag">// What We Do</div>
+      <h2 class="section-title">Full-spectrum<br>defense stack.</h2>
+    </div>
+    <p class="section-body">
+      From perimeter to endpoint, NullShield wraps every layer of your infrastructure in intelligent, adaptive protection — built to outpace adversaries who never sleep.
+    </p>
+  </div>
+
+  <div class="services-grid reveal">
+    <div class="service-card">
+      <div class="service-num">01 —</div>
+      <h3>Threat Intelligence</h3>
+      <p>Real-time feeds from global sensors. ML-powered pattern recognition that identifies attack signatures before they reach your perimeter.</p>
+    </div>
+    <div class="service-card">
+      <div class="service-num">02 —</div>
+      <h3>Zero Trust Architecture</h3>
+      <p>Never trust, always verify. We enforce strict identity verification for every user, device, and workload accessing your systems.</p>
+    </div>
+    <div class="service-card">
+      <div class="service-num">03 —</div>
+      <h3>Incident Response</h3>
+      <p>When breaches happen, minutes matter. Our SOC team activates immediately — containing, analyzing, and remediating threats in real time.</p>
+    </div>
+    <div class="service-card">
+      <div class="service-num">04 —</div>
+      <h3>Penetration Testing</h3>
+      <p>We think like attackers so you don't have to face them unprepared. Regular red team engagements reveal gaps before adversaries do.</p>
+    </div>
+    <div class="service-card">
+      <div class="service-num">05 —</div>
+      <h3>Cloud Security Posture</h3>
+      <p>Continuous monitoring of your AWS, Azure, and GCP environments. Misconfigurations get flagged and remediated automatically.</p>
+    </div>
+    <div class="service-card">
+      <div class="service-num">06 —</div>
+      <h3>Compliance & Audit</h3>
+      <p>SOC 2, ISO 27001, GDPR, HIPAA — we handle the frameworks so your team focuses on building, not auditing.</p>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="how">
+  <div class="how-inner">
+    <div>
+      <div class="section-tag reveal">// How It Works</div>
+      <h2 class="section-title reveal">Deployed in<br>hours. Not months.</h2>
+      <div class="steps">
+        <div class="step reveal">
+          <div class="step-num">01</div>
+          <div>
+            <h4>Security Audit</h4>
+            <p>We map your entire attack surface — infrastructure, endpoints, applications, and human vectors — in a comprehensive 48-hour assessment.</p>
+          </div>
+        </div>
+        <div class="step reveal">
+          <div class="step-num">02</div>
+          <div>
+            <h4>Shield Deployment</h4>
+            <p>NullShield sensors and agents deploy across your stack. Zero downtime. Fully automated. Integrates with your existing toolchain.</p>
+          </div>
+        </div>
+        <div class="step reveal">
+          <div class="step-num">03</div>
+          <div>
+            <h4>Continuous Protection</h4>
+            <p>Our AI engine and SOC team operate around the clock. You get a live dashboard, real-time alerts, and monthly threat briefings.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="reveal">
+      <div class="terminal">
+        <div class="terminal-bar">
+          <div class="dot dot-r"></div>
+          <div class="dot dot-y"></div>
+          <div class="dot dot-g"></div>
+        </div>
+        <div><span class="t-cmd">nullshield</span> <span class="t-out">scan --target your-infra.com</span></div>
+        <div class="t-out">Initiating surface scan...</div>
+        <div class="t-out">→ Mapping 4,218 endpoints</div>
+        <div class="t-out">→ Analyzing 312 open ports</div>
+        <div class="t-warn">⚠  CVE-2024-1188 detected on api.your-infra.com:443</div>
+        <div class="t-err">✗  Exposed S3 bucket: assets-prod-backup</div>
+        <div class="t-ok">✓  Firewall rules: PASS</div>
+        <div class="t-ok">✓  SSL/TLS configuration: PASS</div>
+        <div class="t-out"> </div>
+        <div><span class="t-cmd">nullshield</span> <span class="t-out">shield --deploy</span></div>
+        <div class="t-ok">✓  Sensors deployed in 1.2s</div>
+        <div class="t-ok">✓  Zero-trust policies activated</div>
+        <div class="t-ok">✓  SOC monitoring: LIVE</div>
+        <div><span class="t-out">$</span> <span class="t-blink">█</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WAITLIST -->
+<section class="waitlist" id="waitlist">
+  <div class="waitlist-inner">
+    <div class="section-tag reveal">// Early Access</div>
+    <h2 class="section-title reveal">Be first. Be protected.</h2>
+    <p class="section-body reveal">
+      We're onboarding a limited cohort of early partners at founding rates. Join the waitlist and our team will reach out to schedule your security briefing.
+    </p>
+
+    <div class="wl-count-bar reveal">
+      <span class="t-out">Active waitlist registrations</span>
+      <span class="count" id="wl-count">—</span>
+    </div>
+
+    <div class="success-box" id="success-box">
+      <h3>// Access Granted</h3>
+      <p>You're on the list. Our team will reach you within 48 hours.<br>Expect an encrypted welcome brief.</p>
+    </div>
+
+    <form class="waitlist-form reveal" id="waitlist-form">
+      <div class="form-row">
+        <div class="form-field">
+          <label>First Name</label>
+          <input type="text" id="f-fname" placeholder="Elara" required>
+        </div>
+        <div class="form-field">
+          <label>Last Name</label>
+          <input type="text" id="f-lname" placeholder="Vance" required>
+        </div>
+      </div>
+      <div class="form-field">
+        <label>Work Email</label>
+        <input type="email" id="f-email" placeholder="elara@yourcompany.com" required>
+      </div>
+      <div class="form-row">
+        <div class="form-field">
+          <label>Company</label>
+          <input type="text" id="f-company" placeholder="Acme Corp" required>
+        </div>
+        <div class="form-field">
+          <label>Company Size</label>
+          <select id="f-size">
+            <option value="">Select size</option>
+            <option>1–10 employees</option>
+            <option>11–50 employees</option>
+            <option>51–200 employees</option>
+            <option>201–1000 employees</option>
+            <option>1000+ employees</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-field">
+        <label>Primary Security Challenge</label>
+        <select id="f-challenge">
+          <option value="">Select your biggest challenge</option>
+          <option>Ransomware & Malware Protection</option>
+          <option>Cloud Security & Misconfigurations</option>
+          <option>Compliance (SOC 2 / ISO / HIPAA)</option>
+          <option>Insider Threats</option>
+          <option>Zero-Day Exploits</option>
+          <option>Identity & Access Management</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <button type="submit" class="submit-btn">Request Early Access →</button>
+      <p class="form-note">No spam. No data selling. Ever. Your info is encrypted at rest.</p>
+    </form>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <a href="#" class="logo">Null<span>Shield</span></a>
+  <div class="footer-links">
+    <a href="#">Privacy Policy</a>
+    <a href="#">Terms of Service</a>
+    <a href="#">Security Research</a>
+    <a href="#">Contact</a>
+  </div>
+  <p class="footer-copy">© 2026 NullShield Inc. All rights reserved.</p>
+</footer>
+
+<!-- Toast -->
+<div class="toast" id="toast">You're on the list.</div>
+
+<script>
+  // Scroll reveal
+  const revealEls = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        e.target.style.transitionDelay = (i * 0.05) + 's';
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  revealEls.forEach(el => observer.observe(el));
+
+  // Waitlist storage
+  const WL_KEY = 'nullshield_waitlist';
+
+  function getWaitlist() {
+    try { return JSON.parse(localStorage.getItem(WL_KEY) || '[]'); } catch { return []; }
+  }
+
+  function saveWaitlist(list) {
+    localStorage.setItem(WL_KEY, JSON.stringify(list));
+  }
+
+  function updateCount() {
+    const count = getWaitlist().length;
+    document.getElementById('wl-count').textContent = count + ' registered';
+  }
+
+  updateCount();
+
+  // Form submit
+  document.getElementById('waitlist-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const fname = document.getElementById('f-fname').value.trim();
+    const lname = document.getElementById('f-lname').value.trim();
+    const email = document.getElementById('f-email').value.trim();
+    const company = document.getElementById('f-company').value.trim();
+    const size = document.getElementById('f-size').value;
+    const challenge = document.getElementById('f-challenge').value;
+
+    if (!fname || !lname || !email || !company) return;
+
+    const list = getWaitlist();
+
+    // Prevent duplicate email
+    if (list.some(r => r.email === email)) {
+      showToast("You're already on the list!");
+      return;
+    }
+
+    list.push({
+      name: fname + ' ' + lname,
+      email, company, size, challenge,
+      ts: new Date().toISOString()
+    });
+
+    saveWaitlist(list);
+    updateCount();
+
+    document.getElementById('waitlist-form').style.display = 'none';
+    document.getElementById('success-box').classList.add('show');
+    showToast('Access granted. Welcome to NullShield.');
+  });
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3500);
+  }
+
+  // Typing cursor effect on hero h1
+  const h1 = document.querySelector('h1');
+  h1.style.opacity = '1';
+</script>
+</body>
+</html>
